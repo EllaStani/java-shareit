@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dao;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.User;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,35 +10,27 @@ import java.util.stream.Collectors;
 @Component
 public class InMemoryItemRepository implements ItemRepository {
     private long id = 0L;
-    private final Map<Long, List<Item>> items = new HashMap<>();
+    private final Map<Long, List<Item>> itemsOfUser = new HashMap<>();
+    private final Map<Long, Item> items = new HashMap<>();
 
     @Override
     public List<Item> getAllItems() {
-        List<Item> allItems = new ArrayList<>();
-        items.forEach((userId, userItems) -> allItems.addAll(userItems));
-        return allItems;
+        return new ArrayList<Item>(items.values());
     }
 
     @Override
     public Item getItemById(long itemId) {
-        List<Item> allItems = getAllItems();
-        if (allItems != null) {
-            allItems.stream()
-                    .filter(p -> p.getId().equals(itemId))
-                    .collect(Collectors.toList());
-            return allItems.get(0);
-        }
-        return null;
+        return items.get(itemId);
     }
 
     @Override
     public List<Item> getItemsByUserId(long userId) {
-        return items.getOrDefault(userId, Collections.emptyList());
+        return itemsOfUser.getOrDefault(userId, Collections.emptyList());
     }
 
     @Override
     public Item getItemByUserIdAndItemId(long userId, long itemId) {
-        List<Item> userItems = items.get(userId);
+        List<Item> userItems = itemsOfUser.get(userId);
         if (userItems != null) {
             userItems.stream()
                     .filter(p -> p.getId().equals(itemId))
@@ -49,11 +42,12 @@ public class InMemoryItemRepository implements ItemRepository {
 
     @Override
     public List<Item> searchItems(String text) {
+        String lowerText = text.toLowerCase();
         List<Item> searchItems = getAllItems();
         if (searchItems != null) {
             return searchItems.stream()
-                    .filter(p -> (p.getName().toLowerCase().contains(text.toLowerCase())
-                            || p.getDescription().toLowerCase().contains(text.toLowerCase()))
+                    .filter(p -> (p.getName().toLowerCase().contains(lowerText)
+                            || p.getDescription().toLowerCase().contains(lowerText))
                             && p.getAvailable())
                     .collect(Collectors.toList());
         }
@@ -61,15 +55,16 @@ public class InMemoryItemRepository implements ItemRepository {
     }
 
     @Override
-    public Item saveNewItem(long userId, Item item) {
+    public Item saveNewItem(User user, Item item) {
         long newId = generateId();
         item.setId(newId);
-        item.setOwner(userId);
-        items.compute(userId, (id, userItems) -> {
+        item.setOwner(user);
+        itemsOfUser.compute(user.getId(), (id, userItems) -> {
             if (userItems == null) {
                 userItems = new ArrayList<>();
             }
             userItems.add(item);
+            items.put(newId, item);
             return userItems;
         });
         return item;
@@ -95,9 +90,10 @@ public class InMemoryItemRepository implements ItemRepository {
 
     @Override
     public void deleteItemByUserIdAndItemId(long userId, long itemId) {
-        if (items.containsKey(userId)) {
-            List<Item> userItems = items.get(userId);
+        if (itemsOfUser.containsKey(userId)) {
+            List<Item> userItems = itemsOfUser.get(userId);
             userItems.removeIf(item -> item.getId().equals(itemId));
+            items.remove(itemId);
         }
     }
 

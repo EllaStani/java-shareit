@@ -2,9 +2,10 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.validation.Create;
+import ru.practicum.shareit.validation.Update;
 
 import java.util.List;
 
@@ -33,16 +34,15 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto saveNewUser(@RequestBody UserDto userDto) {
-        validationCreateUser(userDto);
+    public UserDto saveNewUser(@Validated({Create.class}) @RequestBody UserDto userDto) {
         UserDto newUserDto = userService.saveNewUser(userDto);
         log.info("Post-запрос: добавлен новый пользователь: {}", newUserDto);
         return newUserDto;
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@PathVariable long userId, @RequestBody UserDto userDto) {
-        validationUpdateUser(userDto);
+    public UserDto updateUser(@PathVariable long userId,
+                              @Validated({Update.class}) @RequestBody UserDto userDto) {
         UserDto updateUserDto = userService.updateUser(userId, userDto);
         log.info("Patch-запрос: обновлены данные пользователя: {}", updateUserDto);
         return updateUserDto;
@@ -52,26 +52,5 @@ public class UserController {
     public void deleteUser(@PathVariable long userId) {
         userService.deleteUserById(userId);
         log.info("Delete-запрос:  пользователь с id={} удален из системы", userId);
-    }
-
-    private void validationCreateUser(UserDto userDto) {
-        if (!StringUtils.hasText(userDto.getName())) {
-            log.error("Post-запрос не выполнен: логин либо пустой, либо содержит только пробелы");
-            throw new ValidationException("логин не может быть пустым и содержать только пробелы");
-        }
-
-        if (!StringUtils.hasLength(userDto.getEmail()) || !userDto.getEmail().contains("@")) {
-            log.error("Post-запрос не выполнен: email={} - задан некорректно", userDto.getEmail());
-            throw new ValidationException("электронная почта не может быть пустой и должна содержать символ @");
-        }
-    }
-
-    private void validationUpdateUser(UserDto userDto) {
-        if (StringUtils.hasLength(userDto.getEmail())) {
-            if (!userDto.getEmail().contains("@")) {
-                log.error("Patch-запрос не выполнен: email={} - задан некорректно", userDto.getEmail());
-                throw new ValidationException("электронная почта должна содержать символ @");
-            }
-        }
     }
 }

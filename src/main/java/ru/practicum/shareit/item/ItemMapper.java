@@ -2,9 +2,10 @@ package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.User;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ItemMapper {
     public static ItemDto mapToItemDto(Item item) {
@@ -17,21 +18,19 @@ public class ItemMapper {
         );
     }
 
-    public static List<ItemDto> mapToListItemDto(Iterable<Item> items) {
-        List<ItemDto> itemDtos = new ArrayList<>();
-
-        for (Item item : items) {
-            itemDtos.add(mapToItemDto(item));
-        }
+    public static List<ItemDto> mapToListItemDto(List<Item> items) {
+        List<ItemDto> itemDtos = items.stream()
+                .map(ItemMapper::mapToItemDto)
+                .collect(Collectors.toList());
         return itemDtos;
     }
 
-    public static Item mapToItem(long userId, ItemDto itemDto) {
+    public static Item mapToItem(User user, ItemDto itemDto) {
         Item item = new Item();
         item.setName(itemDto.getName());
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable());
-        item.setOwner(userId);
+        item.setOwner(user);
         return item;
     }
 }

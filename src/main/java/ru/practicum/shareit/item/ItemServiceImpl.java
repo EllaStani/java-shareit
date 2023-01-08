@@ -6,6 +6,8 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.UserDto;
+import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 
 import java.util.List;
@@ -19,7 +21,7 @@ class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getAllItems() {
         List<Item> userItems = itemRepository.getAllItems();
-        return userItems == null ? null : ItemMapper.mapToListItemDto(userItems);
+        return ItemMapper.mapToListItemDto(userItems);
     }
 
     @Override
@@ -50,31 +52,33 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto saveNewItem(long userId, ItemDto itemDto) {
-        checkingExistUser(userId);
-        userService.getUserById(userId);
-        Item item = itemRepository.saveNewItem(userId, ItemMapper.mapToItem(userId, itemDto));
-        ;
+        UserDto userDto = checkingExistUser(userId);
+        Item item = itemRepository.saveNewItem(UserMapper.mapToUser(userDto),
+                ItemMapper.mapToItem(UserMapper.mapToUser(userDto), itemDto));
         return item == null ? null : ItemMapper.mapToItemDto(item);
     }
 
     @Override
     public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
-        checkingExistUser(userId);
+        UserDto userDto = checkingExistUser(userId);
         checkingExistItem(userId, itemId);
-        Item updateItem = itemRepository.updateItem(userId, itemId, ItemMapper.mapToItem(userId, itemDto));
+        Item updateItem = itemRepository.updateItem(userId, itemId,
+                ItemMapper.mapToItem(UserMapper.mapToUser(userDto), itemDto));
         return updateItem == null ? null : ItemMapper.mapToItemDto(updateItem);
     }
 
     @Override
     public void deleteItem(long userId, long itemId) {
-        userService.getUserById(userId);
+        checkingExistUser(userId);
         itemRepository.deleteItemByUserIdAndItemId(userId, itemId);
     }
 
-    private void checkingExistUser(long userId) {
-        if (userService.getUserById(userId) == null) {
+    private UserDto checkingExistUser(long userId) {
+        UserDto userDto = userService.getUserById(userId);
+        if (userDto == null) {
             throw new NotFoundException(String.format("Пользователь с id=%s не найден", userId));
         }
+        return userDto;
     }
 
     private void checkingExistItem(long userId, long itemId) {

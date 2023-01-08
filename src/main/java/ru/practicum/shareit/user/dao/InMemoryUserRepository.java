@@ -53,8 +53,8 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public void deleteUserById(long userId) {
-        emails.remove(users.get(userId).getEmail());
-        users.remove(userId);
+        User user = users.remove(userId);
+        emails.remove(user.getEmail());
     }
 
     private Long generateId() {
