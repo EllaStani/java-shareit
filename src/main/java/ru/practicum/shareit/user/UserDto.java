@@ -15,9 +15,12 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class UserDto {
     private Long id;
+
+    @NotBlank(groups = {Create.class}, message = "Логин не может быть пустым или содержать только пробелы")
+    private String name;
+
     @Email(groups = {Create.class, Update.class}, message = "email не соответствует формату электронной почты")
     @NotNull(groups = {Create.class}, message = "email не задан")
     private String email;
-    @NotBlank(groups = {Create.class}, message = "Логин не может быть пустым или содержать только пробелы")
-    private String name;
+
 }
