@@ -62,6 +62,8 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findByBooker_IdAndEndIsBefore(userId, LocalDateTime.now(), startSort);
                 log.info("Данные о завершенных бронированиях у пользователя с id = {}", userId);
                 return BookingMapper.mapToListBookingOutDto(bookings);
+            default:
+                break;
         }
         return null;
     }
@@ -100,6 +102,8 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.getPastOwnerBooking(userId);
                 log.info("Данные о завершенных бронированиях у владельца с id = {}", userId);
                 return BookingMapper.mapToListBookingOutDto(bookings);
+            default:
+                break;
         }
         return null;
     }
