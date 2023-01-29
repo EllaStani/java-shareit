@@ -15,6 +15,7 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserJpaRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -32,40 +33,41 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
         checkingExistUser(userId);
-        List<Booking> bookings;
         BookingStatus bookingStatus = BookingStatus.valueOf(state);
         Sort startSort = Sort.by("start").descending();
+        List<Booking> bookings = new ArrayList<>();
+
         switch (bookingStatus) {
             case ALL:
                 bookings = bookingRepository.findBookingByBooker_Id(userId, startSort);
                 log.info("У пользователя с id = {} всего бронирований {} : - {}",
                         userId, bookings.size(), bookings);
-                return BookingMapper.mapToListBookingOutDto(bookings);
+                break;
             case WAITING:
                 bookings = bookingRepository.getWaitingBooking(userId);
                 log.info("Данные о бронированиях пользователя с id = {}, ожидающих подтверждения", userId);
-                return BookingMapper.mapToListBookingOutDto(bookings);
+                break;
             case REJECTED:
                 bookings = bookingRepository.getRejectedBooking(userId);
                 log.info("Данные о бронированиях пользователя с id = {}, отклоненных владельцем вещи", userId);
-                return BookingMapper.mapToListBookingOutDto(bookings);
+                break;
             case FUTURE:
                 bookings = bookingRepository.findByBooker_IdAndStartIsAfter(userId, LocalDateTime.now(), startSort);
                 log.info("Все предстоящие бронированиях для пользователя с id = {}: - {}", userId, bookings);
-                return BookingMapper.mapToListBookingOutDto(bookings);
+                break;
             case CURRENT:
                 bookings = bookingRepository.findByBooker_IdAndStartIsBeforeAndEndIsAfter(
                         userId, LocalDateTime.now(), LocalDateTime.now(), startSort);
                 log.info("Данные о текущих бронированиях у пользователя с id = {}", userId);
-                return BookingMapper.mapToListBookingOutDto(bookings);
+                break;
             case PAST:
                 bookings = bookingRepository.findByBooker_IdAndEndIsBefore(userId, LocalDateTime.now(), startSort);
                 log.info("Данные о завершенных бронированиях у пользователя с id = {}", userId);
-                return BookingMapper.mapToListBookingOutDto(bookings);
+                break;
             default:
                 break;
         }
-        return null;
+        return BookingMapper.mapToListBookingOutDto(bookings);
     }
 
     @Override
@@ -74,38 +76,39 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
         checkingExistUser(userId);
-        List<Booking> bookings;
         BookingStatus bookingStatus = BookingStatus.valueOf(state);
+        List<Booking> bookings = new ArrayList<>();
+
         switch (bookingStatus) {
             case ALL:
                 bookings = bookingRepository.getAllBookingForOwner(userId);
                 log.info("У владельца с id = {} забронировно {} вещей: - {}",
                         userId, bookings.size(), bookings);
-                return BookingMapper.mapToListBookingOutDto(bookings);
+                break;
             case WAITING:
                 bookings = bookingRepository.getWaitingOwnerBooking(userId);
                 log.info("Все бронирования,ожидающие подтверждения, владельцем с id = {}", userId);
-                return BookingMapper.mapToListBookingOutDto(bookings);
+                break;
             case REJECTED:
                 bookings = bookingRepository.getRejectedOwnerBooking(userId);
                 log.info("Все бронирования,отклоненные владельцем вещи с id = {}", userId);
-                return BookingMapper.mapToListBookingOutDto(bookings);
+                break;
             case FUTURE:
                 bookings = bookingRepository.getFutureOwnerBooking(userId);
                 log.info("Все предстоящие бронированиях для владельца с id = {}: - {}", userId, bookings);
-                return BookingMapper.mapToListBookingOutDto(bookings);
+                break;
             case CURRENT:
                 bookings = bookingRepository.getCurrentOwnerBooking(userId);
                 log.info("Данные о всех текущих бронированиях для владельца с id = {}", userId);
-                return BookingMapper.mapToListBookingOutDto(bookings);
+                break;
             case PAST:
                 bookings = bookingRepository.getPastOwnerBooking(userId);
                 log.info("Данные о завершенных бронированиях у владельца с id = {}", userId);
-                return BookingMapper.mapToListBookingOutDto(bookings);
+                break;
             default:
                 break;
         }
-        return null;
+        return BookingMapper.mapToListBookingOutDto(bookings);
     }
 
     @Override
