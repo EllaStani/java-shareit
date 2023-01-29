@@ -26,7 +26,7 @@ public class BookingController {
     @GetMapping
     public List<BookingOutDto> getBookingBooker(@RequestHeader("X-Sharer-User-Id") long bookerId,
                                                 @RequestParam(value = "state", defaultValue = "ALL") String state) {
-        List<BookingOutDto> bookings = bookingService.getAllBooking(state, bookerId, "booker");
+        List<BookingOutDto> bookings = bookingService.getAllBookingByBooker(state, bookerId);
         log.info("Get -запрос:  У пользователя с id = {} всего бронирований {} : - {}", bookerId, bookings.size(), bookings);
         return bookings;
     }
@@ -34,7 +34,7 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingOutDto> getAllBookingOwner(@RequestHeader("X-Sharer-User-Id") long ownerId,
                                                   @RequestParam(value = "state", defaultValue = "ALL") String state) {
-        List<BookingOutDto> bookings = bookingService.getAllBooking(state, ownerId, "owner");
+        List<BookingOutDto> bookings = bookingService.getAllBookingByOwner(state, ownerId);
         log.info("Get -запрос:  У владельца с id {} брони: {}", ownerId, bookings);
         return bookings;
     }

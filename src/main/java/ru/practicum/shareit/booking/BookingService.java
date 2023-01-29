@@ -12,5 +12,6 @@ public interface BookingService {
 
     BookingOutDto updateBooking(long bookerId, long bookingId, String approved);
 
-    List<BookingOutDto> getAllBooking(String state, long booker, String type);
+    List<BookingOutDto> getAllBookingByBooker(String state, long booker);
+    List<BookingOutDto> getAllBookingByOwner(String state, long booker);
 }

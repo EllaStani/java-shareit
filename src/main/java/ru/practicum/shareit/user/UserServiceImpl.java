@@ -16,7 +16,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getAllUsers() {
         List<User> users = userRepository.findAll();
-        //return users == null ? null : UserMapper.mapToListUserDto(users);
         return UserMapper.mapToListUserDto(users);
     }
 
