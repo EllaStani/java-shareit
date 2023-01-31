@@ -33,22 +33,22 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
         checkingExistUser(userId);
-        BookingStatus bookingStatus = BookingStatus.valueOf(state);
+        BookingState bookingState = BookingState.valueOf(state);
         Sort startSort = Sort.by("start").descending();
         List<Booking> bookings = new ArrayList<>();
 
-        switch (bookingStatus) {
+        switch (bookingState) {
             case ALL:
                 bookings = bookingRepository.findBookingByBooker_Id(userId, startSort);
                 log.info("У пользователя с id = {} всего бронирований {} : - {}",
                         userId, bookings.size(), bookings);
                 break;
             case WAITING:
-                bookings = bookingRepository.getWaitingBooking(userId);
+                bookings = bookingRepository.findBookingByBooker_IdAndStatus(userId, BookingStatus.WAITING);
                 log.info("Данные о бронированиях пользователя с id = {}, ожидающих подтверждения", userId);
                 break;
             case REJECTED:
-                bookings = bookingRepository.getRejectedBooking(userId);
+                bookings = bookingRepository.findBookingByBooker_IdAndStatus(userId, BookingStatus.REJECTED);
                 log.info("Данные о бронированиях пользователя с id = {}, отклоненных владельцем вещи", userId);
                 break;
             case FUTURE:
@@ -76,33 +76,39 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
         checkingExistUser(userId);
-        BookingStatus bookingStatus = BookingStatus.valueOf(state);
+        BookingState bookingState = BookingState.valueOf(state);
+        Sort startSort = Sort.by("start").descending();
         List<Booking> bookings = new ArrayList<>();
 
-        switch (bookingStatus) {
+        switch (bookingState) {
             case ALL:
-                bookings = bookingRepository.getAllBookingForOwner(userId);
+                bookings = bookingRepository.findBookingByItemOwnerId(userId, startSort);
                 log.info("У владельца с id = {} забронировно {} вещей: - {}",
                         userId, bookings.size(), bookings);
                 break;
             case WAITING:
-                bookings = bookingRepository.getWaitingOwnerBooking(userId);
+                bookings = bookingRepository.findBookingByItemOwnerIdAndStatus(
+                        userId, BookingStatus.WAITING);
                 log.info("Все бронирования,ожидающие подтверждения, владельцем с id = {}", userId);
                 break;
             case REJECTED:
-                bookings = bookingRepository.getRejectedOwnerBooking(userId);
+                bookings = bookingRepository.findBookingByItemOwnerIdAndStatus(
+                        userId, BookingStatus.REJECTED);
                 log.info("Все бронирования,отклоненные владельцем вещи с id = {}", userId);
                 break;
             case FUTURE:
-                bookings = bookingRepository.getFutureOwnerBooking(userId);
+                bookings = bookingRepository.findBookingByItemOwnerIdAndStartIsAfter(
+                        userId, LocalDateTime.now(), startSort);
                 log.info("Все предстоящие бронированиях для владельца с id = {}: - {}", userId, bookings);
                 break;
             case CURRENT:
-                bookings = bookingRepository.getCurrentOwnerBooking(userId);
+                bookings = bookingRepository.findBookingByItemOwnerIdAndStartIsBeforeAndEndIsAfter(
+                        userId, LocalDateTime.now(), LocalDateTime.now(), startSort);
                 log.info("Данные о всех текущих бронированиях для владельца с id = {}", userId);
                 break;
             case PAST:
-                bookings = bookingRepository.getPastOwnerBooking(userId);
+                bookings = bookingRepository.findBookingByItemOwnerIdAndEndIsBefore(
+                        userId, LocalDateTime.now(), startSort);
                 log.info("Данные о завершенных бронированиях у владельца с id = {}", userId);
                 break;
             default:

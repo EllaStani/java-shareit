@@ -2,9 +2,7 @@ package ru.practicum.shareit.booking.dto;
 
 import lombok.*;
 
-@Getter
-@Setter
-@ToString
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingItemDto {

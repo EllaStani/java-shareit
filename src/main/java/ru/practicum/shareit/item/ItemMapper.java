@@ -2,7 +2,7 @@ package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Comments;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
@@ -23,7 +23,7 @@ public class ItemMapper {
         return itemDto;
     }
 
-    public static ItemDto mapToItemDto(Item item, List<Comments> comments) {
+    public static ItemDto mapToItemDto(Item item, List<Comment> comments) {
         ItemDto itemDto = new ItemDto();
         itemDto.setId(item.getId());
         itemDto.setName(item.getName());
@@ -50,19 +50,19 @@ public class ItemMapper {
         return item;
     }
 
-    public static CommentDto mapToCommentDto(Comments comment) {
+    public static CommentDto mapToCommentDto(Comment comment) {
         return new CommentDto(comment.getId(), comment.getText(), comment.getAuthor().getName(), comment.getCreated());
     }
 
-    public static List<CommentDto> mapToListCommentDto(List<Comments> comments) {
+    public static List<CommentDto> mapToListCommentDto(List<Comment> comments) {
         List<CommentDto> commentDtos = comments.stream()
                 .map(ItemMapper::mapToCommentDto)
                 .collect(Collectors.toList());
         return commentDtos;
     }
 
-    public static Comments mapToComment(User author, Item item, CommentDto commentDto) {
-        Comments comment = new Comments();
+    public static Comment mapToComment(User author, Item item, CommentDto commentDto) {
+        Comment comment = new Comment();
         comment.setText(commentDto.getText());
         comment.setItem(item);
         comment.setAuthor(author);

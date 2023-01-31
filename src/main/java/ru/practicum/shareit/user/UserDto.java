@@ -22,5 +22,4 @@ public class UserDto {
     @Email(groups = {Create.class, Update.class}, message = "email не соответствует формату электронной почты")
     @NotNull(groups = {Create.class}, message = "email не задан")
     private String email;
-
 }
