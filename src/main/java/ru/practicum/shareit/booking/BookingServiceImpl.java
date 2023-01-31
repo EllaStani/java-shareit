@@ -123,7 +123,7 @@ public class BookingServiceImpl implements BookingService {
         checkingExistBooking(bookingId);
         Booking booking = bookingRepository.findById(bookingId).get();
 
-        if (booking.getBooker().getId() == userId || booking.getItem().getOwnerId() == userId) {
+        if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId) {
             return BookingMapper.mapToBookingOutDto(booking);
         } else {
             throw new NotFoundException(String.format("Пользователь не владелец или не бронировал данную вещь"));
@@ -137,7 +137,7 @@ public class BookingServiceImpl implements BookingService {
         checkingExistItem(bookingInDto.getItemId());
         Item item = itemRepository.findById(bookingInDto.getItemId()).get();
 
-        if (bookerId == item.getOwnerId()) {
+        if (bookerId == item.getOwner().getId()) {
             throw new NotFoundException("Владелец не может забронировать свою вещь");
         }
 
@@ -155,7 +155,7 @@ public class BookingServiceImpl implements BookingService {
         checkingExistUser(bookerId);
         checkingExistBooking(bookingId);
         Booking booking = bookingRepository.findById(bookingId).get();
-        if (booking.getItem().getOwnerId() != bookerId) {
+        if (booking.getItem().getOwner().getId() != bookerId) {
             throw new NotFoundException("Только владелец вещи может подтвердить или отклонить запрос на бронирование!");
         }
 

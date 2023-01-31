@@ -18,7 +18,7 @@ public class ItemMapper {
         itemDto.setName(item.getName());
         itemDto.setDescription(item.getDescription());
         itemDto.setAvailable(item.getAvailable());
-        itemDto.setOwnerId(item.getOwnerId());
+        itemDto.setOwner(item.getOwner().getId());
         itemDto.setComments(new ArrayList<>());
         return itemDto;
     }
@@ -29,7 +29,7 @@ public class ItemMapper {
         itemDto.setName(item.getName());
         itemDto.setDescription(item.getDescription());
         itemDto.setAvailable(item.getAvailable());
-        itemDto.setOwnerId(item.getOwnerId());
+        itemDto.setOwner(item.getOwner().getId());
         itemDto.setComments(mapToListCommentDto(comments));
         return itemDto;
     }
@@ -41,12 +41,12 @@ public class ItemMapper {
         return itemDtos;
     }
 
-    public static Item mapToItem(long userId, ItemDto itemDto) {
+    public static Item mapToItem(User user, ItemDto itemDto) {
         Item item = new Item();
         item.setName(itemDto.getName());
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable());
-        item.setOwnerId(userId);
+        item.setOwner(user);
         return item;
     }
 

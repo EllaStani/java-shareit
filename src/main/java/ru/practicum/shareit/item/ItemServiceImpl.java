@@ -52,7 +52,7 @@ public class ItemServiceImpl implements ItemService {
         List<Comment> comments = commentRepository.findCommentByItem_Id(itemId);
         ItemDto itemDto = ItemMapper.mapToItemDto(item, comments);
 
-        if (item.getOwnerId() == userId) {
+        if (item.getOwner().getId() == userId) {
             itemDto.setLastBooking(getLastBookingByItemId(itemId));
             itemDto.setNextBooking(getNextBookingByItemId(itemId));
         }
@@ -69,8 +69,8 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public ItemDto saveNewItem(long userId, ItemDto itemDto) {
-        checkingExistUser(userId);
-        Item newItem = itemRepository.save(ItemMapper.mapToItem(userId, itemDto));
+        User user = checkingExistUser(userId);
+        Item newItem = itemRepository.save(ItemMapper.mapToItem(user, itemDto));
         return ItemMapper.mapToItemDto(newItem);
     }
 
@@ -78,7 +78,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
         Item updateItem = itemRepository.findById(itemId).get();
-        if (updateItem.getOwnerId() == userId) {
+        if (updateItem.getOwner().getId() == userId) {
 
             if (itemDto.getName() != null) {
                 updateItem.setName(itemDto.getName());
@@ -117,10 +117,12 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    private void checkingExistUser(long userId) {
-        if (!userRepository.existsById(userId)) {
+    private User checkingExistUser(long userId) {
+        User user = userRepository.findById(userId).get();
+        if (user == null) {
             throw new NotFoundException(String.format("Пользователь с id=%s не найден", userId));
         }
+        return user;
     }
 
     private void checkingExistItem(long itemId) {
