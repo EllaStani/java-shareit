@@ -100,8 +100,8 @@ class ItemServiceImplTest {
         when(bookingRepository.findBookingByItemIdAndEndIsBefore(
                 anyLong(), any(LocalDateTime.class), any()))
                 .thenReturn(List.of(booking1));
-        when(bookingRepository.findBookingByItemIdAndStartIsAfter(
-                anyLong(), any(LocalDateTime.class), any()))
+        when(bookingRepository.findBookingByItemIdAndStartIsAfterAndStatusIsNot(
+                anyLong(), any(LocalDateTime.class), any(), any()))
                 .thenReturn(List.of(booking2));
 
         var result = itemService.getItemsByUserId(user1.getId(), 0, 10);
@@ -163,8 +163,8 @@ class ItemServiceImplTest {
         when(bookingRepository.findBookingByItemIdAndEndIsBefore(
                 anyLong(), any(LocalDateTime.class), any()))
                 .thenReturn(List.of(booking1));
-        when(bookingRepository.findBookingByItemIdAndStartIsAfter(
-                anyLong(), any(LocalDateTime.class), any()))
+        when(bookingRepository.findBookingByItemIdAndStartIsAfterAndStatusIsNot(
+                anyLong(), any(LocalDateTime.class), any(), any()))
                 .thenReturn(List.of(booking2));
 
         var result = itemService.getItemById(user1.getId(), item1.getId());
@@ -283,7 +283,6 @@ class ItemServiceImplTest {
         nullUser = null;
 
         when(userRepository.findById(100L)).thenReturn(Optional.ofNullable(nullUser));
-//        when(itemRepository.findById(item1.getId())).thenReturn(Optional.of(item1));
 
         Assertions.assertThrows(NotFoundException.class,
                 () -> {

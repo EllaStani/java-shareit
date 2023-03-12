@@ -190,8 +190,8 @@ class BookingJpaRepositoryTest {
     void findBookingByItemIdAndStartIsAfter() {
         Sort startSort = Sort.by("start");
 
-        var result = bookingRepository.findBookingByItemIdAndStartIsAfter(
-                item1.getId(), LocalDateTime.parse("2023-03-05T00:09:00"), startSort);
+        var result = bookingRepository.findBookingByItemIdAndStartIsAfterAndStatusIsNot(
+                item1.getId(), LocalDateTime.parse("2023-03-05T00:09:00"), REJECTED, startSort);
 
         assertNotNull(result);
         assertEquals(1, result.size());

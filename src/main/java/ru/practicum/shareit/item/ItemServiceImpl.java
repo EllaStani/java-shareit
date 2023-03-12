@@ -26,6 +26,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.practicum.shareit.booking.BookingStatus.REJECTED;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -168,10 +170,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private BookingNextDto getNextBookingByItemId(long itemId) {
-        Sort startSort = Sort.by("start").descending();
+        Sort startSort = Sort.by("start");
         LocalDateTime nowDate = LocalDateTime.now();
-        List<Booking> nextBookings = bookingRepository.findBookingByItemIdAndStartIsAfter(
-                itemId, nowDate, startSort);
+        List<Booking> nextBookings = bookingRepository.findBookingByItemIdAndStartIsAfterAndStatusIsNot(
+                itemId, nowDate, REJECTED, startSort);
         return nextBookings.size() == 0 ? null : BookingMapper.mapToBookingNextDto(nextBookings.get(0));
     }
 }
