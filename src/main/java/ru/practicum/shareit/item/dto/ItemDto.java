@@ -20,6 +20,7 @@ public class ItemDto {
     @NotNull(message = "Не задан статус доступности для аренды")
     private Boolean available;
     private Long owner;
+    private Long requestId;
     private List<CommentDto> comments;
     private BookingLastDto lastBooking;
     private BookingNextDto nextBooking;
