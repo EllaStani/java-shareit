@@ -77,21 +77,16 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private List<RequestOutDto> mapToListRequestWithResponseDto(List<ItemRequest> requests) {
-        List<RequestOutDto> requestDtos = new ArrayList<>();
-
-        List<Long> requestIds = new ArrayList<>();
-        requests.stream()
-                .map(r -> requestIds.add(r.getId()))
-                .collect(Collectors.toList());
-
+        List<Long> requestIds = requests.stream().map(ItemRequest::getId).collect(Collectors.toList());
         List<Item> items = itemRepository.findItemByListRequestIds(requestIds);
 
+        List<RequestOutDto> requestDtos = new ArrayList<>();
         for (ItemRequest request : requests) {
             List requestItems = items.stream()
-                    .filter(i -> i.getRequest().getId() == request.getId())
+                    .filter(i -> i.getRequest().getId().equals(request.getId()))
                     .collect(Collectors.toList());
-            requestDtos.add(RequestMapper.mapToRequestOutDto(
-                    request, ItemMapper.mapToListItemForRequestDto(requestItems)));
+            requestDtos.add(
+                    RequestMapper.mapToRequestOutDto(request, ItemMapper.mapToListItemForRequestDto(requestItems)));
         }
         return requestDtos;
     }
