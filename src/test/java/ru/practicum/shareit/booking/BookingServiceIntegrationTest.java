@@ -85,7 +85,7 @@ public class BookingServiceIntegrationTest {
         em.persist(item1);
 
         BookingInDto bookingInDto = new BookingInDto();
-        bookingInDto.setItemId(1L);
+        bookingInDto.setItemId(item1.getId());
         bookingInDto.setStart(LocalDateTime.parse("2023-05-01T00:09:00"));
         bookingInDto.setEnd(LocalDateTime.parse("2023-05-03T00:09:00"));
 
