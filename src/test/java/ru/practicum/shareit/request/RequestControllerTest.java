@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = RequestController.class)
 @AutoConfigureMockMvc
-class RequestControllerTest {
+public class RequestControllerTest {
     @MockBean
     private RequestService requestService;
     @Autowired
@@ -46,7 +46,7 @@ class RequestControllerTest {
     }
 
     @Test
-    void getRequests() throws Exception {
+    public void getRequests() throws Exception {
         when(requestService.getItemRequestByRequestorId(1L))
                 .thenReturn(List.of(requestOutDto));
 
@@ -56,10 +56,12 @@ class RequestControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].description").value("request"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].created").value("2023-03-01T00:09:00"));
+        verify(requestService, times(1))
+                .getItemRequestByRequestorId(1L);
     }
 
     @Test
-    void getRequestsWithEmptyList() throws Exception {
+    public void getRequestsWithEmptyList() throws Exception {
         when(requestService.getItemRequestByRequestorId(1L))
                 .thenReturn(Collections.emptyList());
 
@@ -67,20 +69,23 @@ class RequestControllerTest {
                         .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(0)));
-        verify(requestService, times(1)).getItemRequestByRequestorId(1L);
+        verify(requestService, times(1))
+                .getItemRequestByRequestorId(1L);
     }
 
     @Test
-    void getRequestsWithUnknownRequestorId() throws Exception {
+    public void getRequestsWithUnknownRequestorId() throws Exception {
         when(requestService.getItemRequestByRequestorId(100L)).thenThrow(new NotFoundException("Not Found"));
 
         mockMvc.perform(get("/requests")
                         .header("X-Sharer-User-Id", 100L))
                 .andExpect(status().is(404));
+        verify(requestService, times(1))
+                .getItemRequestByRequestorId(100L);
     }
 
     @Test
-    void getItemRequestById() throws Exception {
+    public void getItemRequestById() throws Exception {
         when(requestService.getItemRequestById(1L, 1L))
                 .thenReturn(requestOutDto);
 
@@ -90,31 +95,35 @@ class RequestControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("request"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.created").value("2023-03-01T00:09:00"));
+        verify(requestService, times(1))
+                .getItemRequestById(1L, 1L);
     }
 
     @Test
-    void getUnknownItemRequestById() throws Exception {
+    public void getUnknownItemRequestById() throws Exception {
         when(requestService.getItemRequestById(1L, 100L)).thenThrow(new NotFoundException("Not Found"));
 
         mockMvc.perform(get("/requests/{requestId}", 100L)
                         .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().is(404));
+        verify(requestService, times(1))
+                .getItemRequestById(1L, 100L);
     }
 
     @Test
-    void getRequestsAllWithEmptyList() throws Exception {
+    public void getRequestsAllWithEmptyList() throws Exception {
         when(requestService.getAllItemRequest(1L, 0, 10))
                 .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/requests/all")
                         .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().isOk());
-
-        verify(requestService, times(1)).getAllItemRequest(1L, 0, 10);
+        verify(requestService, times(1))
+                .getAllItemRequest(1L, 0, 10);
     }
 
     @Test
-    void getRequestsAll() throws Exception {
+    public void getRequestsAll() throws Exception {
         when(requestService.getAllItemRequest(1L, 0, 10))
                 .thenReturn(List.of(requestOutDto));
 
@@ -124,10 +133,12 @@ class RequestControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].description").value("request"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].created").value("2023-03-01T00:09:00"));
+        verify(requestService, times(1))
+                .getAllItemRequest(1L, 0, 10);
     }
 
     @Test
-    void saveNewItemRequest() throws Exception {
+    public void saveNewItemRequest() throws Exception {
         RequestInDto requestInDto = new RequestInDto("request");
         RequestSaveDto requestSaveDto = new RequestSaveDto(1L, LocalDateTime.parse("2023-03-01T00:09:00"),
                 "request");
@@ -144,10 +155,12 @@ class RequestControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.created").value("2023-03-01T00:09:00"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("request"));
+        verify(requestService, times(1))
+                .saveNewRequest(1L, requestInDto);
     }
 
     @Test
-    void saveNewItemRequestBlankName() throws Exception {
+    public void saveNewItemRequestBlankName() throws Exception {
         RequestInDto failRequestInDto = new RequestInDto("");
 
         mockMvc.perform(post("/requests")
@@ -160,7 +173,7 @@ class RequestControllerTest {
     }
 
     @Test
-    void saveNewItemRequestNoName() throws Exception {
+    public void saveNewItemRequestNoName() throws Exception {
         RequestInDto failRequestInDto = new RequestInDto();
 
         mockMvc.perform(post("/requests")
@@ -173,7 +186,7 @@ class RequestControllerTest {
     }
 
     @Test
-    void saveNewItemRequestUnknownUserById() throws Exception {
+    public void saveNewItemRequestUnknownUserById() throws Exception {
         RequestInDto requestInDto = new RequestInDto("request");
         when(requestService.saveNewRequest(100L, requestInDto)).thenThrow(new NotFoundException("Not Found"));
 
@@ -184,5 +197,7 @@ class RequestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(404));
+        verify(requestService, times(1))
+                .saveNewRequest(100L, requestInDto);
     }
 }

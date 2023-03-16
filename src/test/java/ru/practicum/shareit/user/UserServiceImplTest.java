@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class UserServiceImplTest {
-    private UserServiceImpl userService;
+    private UserService userService;
     private UserJpaRepository userRepository;
     private User user;
     private UserDto userDto;

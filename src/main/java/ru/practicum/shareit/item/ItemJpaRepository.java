@@ -13,6 +13,10 @@ public interface ItemJpaRepository extends JpaRepository<Item, Long> {
     List<Item> findItemByRequestId(long requestId);
 
     @Query(" select i from Item i " +
+            "where i.request.id in ?1")
+    List<Item> findItemByListRequestIds(List<Long> requestIds);
+
+    @Query(" select i from Item i " +
             "where (lower(i.name) like upper(concat('%', ?1, '%')) " +
             " or lower(i.description) like lower(concat('%', ?1, '%'))) and i.available = true")
     List<Item> search(String text, Pageable pageable);

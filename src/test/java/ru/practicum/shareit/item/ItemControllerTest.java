@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = ItemController.class)
 @AutoConfigureMockMvc
-class ItemControllerTest {
+public class ItemControllerTest {
     @MockBean
     private ItemService itemService;
     @Autowired
@@ -49,7 +49,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void getItemsByUserId() throws Exception {
+    public void getItemsByUserId() throws Exception {
         when(itemService.getItemsByUserId(1L, 0, 10))
                 .thenReturn(List.of(itemDto));
         mockMvc.perform(MockMvcRequestBuilders.get("/items")
@@ -60,10 +60,12 @@ class ItemControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value(itemDto.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].description").value(itemDto.getDescription()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].available").value(itemDto.getAvailable()));
+        verify(itemService, times(1))
+                .getItemsByUserId(1L, 0, 10);
     }
 
     @Test
-    void getItemsUnknownUser() throws Exception {
+    public void getItemsUnknownUser() throws Exception {
         when(itemService.getItemsByUserId(100L, 0, 10))
                 .thenThrow(new NotFoundException("Not Found"));
 
@@ -73,7 +75,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void searchItems() throws Exception {
+    public void searchItems() throws Exception {
         when(itemService.searchItems("tem", 0, 10))
                 .thenReturn(List.of(itemDto));
 
@@ -88,7 +90,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void searchItemsWithEmptyText() throws Exception {
+    public void searchItemsWithEmptyText() throws Exception {
         when(itemService.searchItems("", 0, 10))
                 .thenReturn(Collections.emptyList());
 
@@ -100,7 +102,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void searchItemsWithEmptyList() throws Exception {
+    public void searchItemsWithEmptyList() throws Exception {
         when(itemService.searchItems("abc", 0, 10))
                 .thenReturn(Collections.emptyList());
 
@@ -108,11 +110,12 @@ class ItemControllerTest {
                         .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(0)));
-        verify(itemService, times(1)).searchItems("abc", 0, 10);
+        verify(itemService, times(1))
+                .searchItems("abc", 0, 10);
     }
 
     @Test
-    void getItemById() throws Exception {
+    public void getItemById() throws Exception {
         when(itemService.getItemById(anyLong(), anyLong()))
                 .thenReturn(itemDto);
         mockMvc.perform(MockMvcRequestBuilders.get("/items/{itemId}", 1L)
@@ -122,19 +125,23 @@ class ItemControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(itemDto.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(itemDto.getDescription()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.available").value(itemDto.getAvailable()));
+        verify(itemService, times(1))
+                .getItemById(anyLong(), anyLong());
     }
 
     @Test
-    void getUnknownItemById() throws Exception {
+    public void getUnknownItemById() throws Exception {
         when(itemService.getItemById(anyLong(), anyLong())).thenThrow(new NotFoundException("Not Found"));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/items/{itemId}", 100L)
                         .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().is(404));
+        verify(itemService, times(1))
+                .getItemById(anyLong(), anyLong());
     }
 
     @Test
-    void saveNewItem() throws Exception {
+    public void saveNewItem() throws Exception {
         ItemDto newItemDto = new ItemDto();
         newItemDto.setName("Item");
         newItemDto.setDescription("ItemDescription");
@@ -154,11 +161,13 @@ class ItemControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(itemDto.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(itemDto.getDescription()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.available").value(itemDto.getAvailable()));
+        verify(itemService, times(1))
+                .saveNewItem(1L, newItemDto);
     }
 
     @Test
     @DisplayName("Если нет name, то возвращается код 400")
-    void saveNewItemNoName() throws Exception {
+    public void saveNewItemNoName() throws Exception {
         ItemDto failItemDto = new ItemDto();
         failItemDto.setDescription("ItemDescription");
         failItemDto.setAvailable(true);
@@ -174,7 +183,7 @@ class ItemControllerTest {
 
     @Test
     @DisplayName("Если description пусто, то возвращается код 400")
-    void saveNewItemEmptyDescription() throws Exception {
+    public void saveNewItemEmptyDescription() throws Exception {
         ItemDto failItemDto = new ItemDto();
         failItemDto.setName("Item");
         failItemDto.setDescription("");
@@ -191,7 +200,7 @@ class ItemControllerTest {
 
     @Test
     @DisplayName("Если нет available, то возвращается код 400")
-    void saveNewItemNoAvailable() throws Exception {
+    public void saveNewItemNoAvailable() throws Exception {
         ItemDto failItemDto = new ItemDto();
         failItemDto.setName("Item");
         failItemDto.setDescription("ItemDescription");
@@ -206,7 +215,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void saveNewItemUnknownUser() throws Exception {
+    public void saveNewItemUnknownUser() throws Exception {
         ItemDto newItemDto = new ItemDto();
         newItemDto.setName("Item");
         newItemDto.setDescription("ItemDescription");
@@ -222,10 +231,12 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(404));
+        verify(itemService, times(1))
+                .saveNewItem(100L, newItemDto);
     }
 
     @Test
-    void saveNewComment() throws Exception {
+    public void saveNewComment() throws Exception {
         CommentDto newCommentDto = new CommentDto();
         newCommentDto.setText("Comment from user1");
 
@@ -248,10 +259,12 @@ class ItemControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(commentDto.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.text").value(commentDto.getText()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.authorName").value(commentDto.getAuthorName()));
+        verify(itemService, times(1))
+                .saveNewComment(1L, 1L, newCommentDto);
     }
 
     @Test
-    void saveNewCommentNoText() throws Exception {
+    public void saveNewCommentNoText() throws Exception {
         CommentDto newCommentDto = new CommentDto();
         newCommentDto.setText("   ");
 
@@ -272,11 +285,12 @@ class ItemControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
-        verify(itemService, times(0)).saveNewComment(1L, 1L, newCommentDto);
+        verify(itemService, times(0))
+                .saveNewComment(1L, 1L, newCommentDto);
     }
 
     @Test
-    void saveNewCommentUnknownUser() throws Exception {
+    public void saveNewCommentUnknownUser() throws Exception {
         CommentDto newCommentDto = new CommentDto();
         newCommentDto.setText("Comment from user1");
 
@@ -291,11 +305,12 @@ class ItemControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(404));
 
-        verify(itemService, times(1)).saveNewComment(100L, 1L, newCommentDto);
+        verify(itemService, times(1))
+                .saveNewComment(100L, 1L, newCommentDto);
     }
 
     @Test
-    void updateItem() throws Exception {
+    public void updateItem() throws Exception {
         ItemDto newItemDto = new ItemDto();
         newItemDto.setDescription("ItemDescription");
 
@@ -313,10 +328,12 @@ class ItemControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(itemDto.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(itemDto.getDescription()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.available").value(itemDto.getAvailable()));
+        verify(itemService, times(1))
+                .updateItem(1L, 1L, newItemDto);
     }
 
     @Test
-    void updateItemUnknownUser() throws Exception {
+    public void updateItemUnknownUser() throws Exception {
         ItemDto newItemDto = new ItemDto();
         newItemDto.setDescription("ItemDescription");
 

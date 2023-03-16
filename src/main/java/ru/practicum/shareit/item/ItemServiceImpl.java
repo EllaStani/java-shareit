@@ -72,14 +72,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto saveNewItem(long userId, ItemDto itemDto) {
         User user = checkingExistUser(userId);
-        if (itemDto.getRequestId() != null) {
-            ItemRequest itemRequest = requestRepository.findById(itemDto.getRequestId()).get();
-            Item newItem = itemRepository.save(ItemMapper.mapToItem(user, itemRequest, itemDto));
-            return ItemMapper.mapToItemDto(newItem);
-        } else {
-            Item newItem = itemRepository.save(ItemMapper.mapToItem(user, itemDto));
-            return ItemMapper.mapToItemDto(newItem);
-        }
+        Item newItem = itemRepository.save(mapToItem(user, itemDto));
+        return ItemMapper.mapToItemDto(newItem);
     }
 
     @Transactional
@@ -134,19 +128,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private User checkingExistUser(long userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            throw new NotFoundException(String.format("Пользователь с id=%s не найден", userId));
-        }
-        return user;
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id=%s не найден", userId)));
     }
 
     private Item checkingExistItem(long itemId) {
-        Item item = itemRepository.findById(itemId).orElse(null);
-        if (item == null) {
-            throw new NotFoundException(String.format("Вещь с id=%s не найдена", itemId));
-        }
-        return item;
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id=%s не найдена", itemId)));
     }
 
     private List<ItemDto> mapToListItemDto(List<Item> items) {
@@ -159,6 +147,19 @@ public class ItemServiceImpl implements ItemService {
             itemDtos.add(itemDto);
         }
         return itemDtos;
+    }
+
+    private Item mapToItem(User user, ItemDto itemDto) {
+        Item item = new Item();
+        item.setName(itemDto.getName());
+        item.setDescription(itemDto.getDescription());
+        item.setAvailable(itemDto.getAvailable());
+        item.setOwner(user);
+        if (itemDto.getRequestId() != null) {
+            ItemRequest itemRequest = requestRepository.findById(itemDto.getRequestId()).orElse(null);
+            item.setRequest(itemRequest);
+        }
+        return item;
     }
 
     private BookingLastDto getLastBookingByItemId(long itemId) {

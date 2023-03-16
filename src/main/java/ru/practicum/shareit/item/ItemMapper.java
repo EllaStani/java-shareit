@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemForRequestDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 import java.util.ArrayList;
@@ -67,25 +66,6 @@ public class ItemMapper {
                 .map(ItemMapper::mapToItemForRequestDto)
                 .collect(Collectors.toList());
         return itemDtos;
-    }
-
-    public static Item mapToItem(User user, ItemDto itemDto) {
-        Item item = new Item();
-        item.setName(itemDto.getName());
-        item.setDescription(itemDto.getDescription());
-        item.setAvailable(itemDto.getAvailable());
-        item.setOwner(user);
-        return item;
-    }
-
-    public static Item mapToItem(User user, ItemRequest itemRequest, ItemDto itemDto) {
-        Item item = new Item();
-        item.setName(itemDto.getName());
-        item.setDescription(itemDto.getDescription());
-        item.setAvailable(itemDto.getAvailable());
-        item.setOwner(user);
-        item.setRequest(itemRequest);
-        return item;
     }
 
     public static CommentDto mapToCommentDto(Comment comment) {

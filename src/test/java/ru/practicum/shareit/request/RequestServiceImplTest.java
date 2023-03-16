@@ -23,8 +23,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class RequestServiceImplTest {
-    private RequestServiceImpl requestService;
+public class RequestServiceImplTest {
+    private RequestService requestService;
     private RequestJpaRepository requestRepository;
     private ItemJpaRepository itemRepository;
     private UserJpaRepository userRepository;
@@ -60,8 +60,7 @@ class RequestServiceImplTest {
         Pageable pageable = FromSizeRequest.of(0, 10, createdSort);
 
         when(requestRepository.findItemRequestByRequestorIdIsNot(user2.getId(), pageable)).thenReturn(List.of(request1));
-        when(requestRepository.findById(request1.getId())).thenReturn(Optional.of(request1));
-        when(itemRepository.findItemByRequestId(request1.getId())).thenReturn(List.of(item1));
+        when(itemRepository.findItemByListRequestIds(List.of(request1.getId()))).thenReturn(List.of(item1));
 
         var result = requestService.getAllItemRequest(user2.getId(), 0, 10);
 
@@ -110,8 +109,9 @@ class RequestServiceImplTest {
 
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
         when(requestRepository.findItemRequestByRequestorId(request1.getId(), createdSort)).thenReturn(List.of(request1));
+
         when(requestRepository.findById(request1.getId())).thenReturn(Optional.of(request1));
-        when(itemRepository.findItemByRequestId(request1.getId())).thenReturn(List.of(item1));
+        when(itemRepository.findItemByListRequestIds(List.of(request1.getId()))).thenReturn(List.of(item1));
 
         var result = requestService.getItemRequestByRequestorId(user1.getId());
 

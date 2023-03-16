@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
-class BookingOutDtoTest {
+public class BookingOutDtoTest {
     @Autowired
     private JacksonTester<BookingOutDto> json;
 

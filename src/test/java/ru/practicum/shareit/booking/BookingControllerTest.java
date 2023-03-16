@@ -20,13 +20,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = BookingController.class)
 @AutoConfigureMockMvc
-class BookingControllerTest {
+public class BookingControllerTest {
     @MockBean
     private BookingService bookingService;
     @Autowired
@@ -37,7 +37,7 @@ class BookingControllerTest {
     private BookingOutDto bookingOutDto;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         bookingOutDto = new BookingOutDto();
         bookingOutDto.setId(1L);
         bookingOutDto.setStart(LocalDateTime.parse("2023-03-01T00:09:00"));
@@ -46,7 +46,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void getBookingById() throws Exception {
+    public void getBookingById() throws Exception {
         when(bookingService.getBookingById(1L, 1L))
                 .thenReturn(bookingOutDto);
 
@@ -57,19 +57,23 @@ class BookingControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.start").value("2023-03-01T00:09:00"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.end").value("2023-03-03T00:09:00"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("WAITING"));
+        verify(bookingService, times(1))
+                .getBookingById(1L, 1L);
     }
 
     @Test
-    void getUnknownBookingById() throws Exception {
+    public void getUnknownBookingById() throws Exception {
         when(bookingService.getBookingById(1L, 100L)).thenThrow(new NotFoundException("Not Found"));
 
         mockMvc.perform(get("/bookings/{bookingId}", 100L)
                         .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().is(404));
+        verify(bookingService, times(1))
+                .getBookingById(1L, 100L);
     }
 
     @Test
-    void getBookingBooker() throws Exception {
+    public void getBookingBooker() throws Exception {
         when(bookingService.getAllBookingByBooker("ALL", 1L, 0, 10))
                 .thenReturn(List.of(bookingOutDto));
 
@@ -81,20 +85,24 @@ class BookingControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].start").value("2023-03-01T00:09:00"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].end").value("2023-03-03T00:09:00"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].status").value("WAITING"));
+        verify(bookingService, times(1))
+                .getAllBookingByBooker("ALL", 1L, 0, 10);
     }
 
     @Test
-    void getBookingUnknownBooker() throws Exception {
+    public void getBookingUnknownBooker() throws Exception {
         when(bookingService.getAllBookingByBooker("ALL", 100L, 0, 10))
                 .thenThrow(new NotFoundException("Not Found"));
 
         mockMvc.perform(get("/bookings?state={state}", "ALL")
                         .header("X-Sharer-User-Id", 100L))
                 .andExpect(status().is(404));
+        verify(bookingService, times(1))
+                .getAllBookingByBooker("ALL", 100L, 0, 10);
     }
 
     @Test
-    void getAllBookingOwner() throws Exception {
+    public void getAllBookingOwner() throws Exception {
         when(bookingService.getAllBookingByOwner("ALL", 1L, 0, 10))
                 .thenReturn(List.of(bookingOutDto));
 
@@ -106,20 +114,24 @@ class BookingControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].start").value("2023-03-01T00:09:00"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].end").value("2023-03-03T00:09:00"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].status").value("WAITING"));
+        verify(bookingService, times(1))
+                .getAllBookingByOwner("ALL", 1L, 0, 10);
     }
 
     @Test
-    void getAllBookingUnknownOwner() throws Exception {
+    public void getAllBookingUnknownOwner() throws Exception {
         when(bookingService.getAllBookingByOwner("ALL", 1L, 0, 10))
                 .thenThrow(new NotFoundException("Not Found"));
 
         mockMvc.perform(get("/bookings/owner?state={state}", "ALL")
                         .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().is(404));
+        verify(bookingService, times(1))
+                .getAllBookingByOwner("ALL", 1L, 0, 10);
     }
 
     @Test
-    void saveNewBooking() throws Exception {
+    public void saveNewBooking() throws Exception {
         bookingInDto = new BookingInDto();
         bookingInDto.setItemId(1L);
         bookingInDto.setStart(LocalDateTime.parse("2023-03-01T00:09:00"));
@@ -138,10 +150,12 @@ class BookingControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.start").value("2023-03-01T00:09:00"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.end").value("2023-03-03T00:09:00"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("WAITING"));
+        verify(bookingService, times(1))
+                .saveNewBooking(1L, bookingInDto);
     }
 
     @Test
-    void saveNewBookingUnknownUser() throws Exception {
+    public void saveNewBookingUnknownUser() throws Exception {
         bookingInDto = new BookingInDto();
         bookingInDto.setItemId(1L);
         bookingInDto.setStart(LocalDateTime.parse("2023-03-01T00:09:00"));
@@ -157,10 +171,12 @@ class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(404));
+        verify(bookingService, times(1))
+                .saveNewBooking(100L, bookingInDto);
     }
 
     @Test
-    void saveNewBookingErrorValidation() throws Exception {
+    public void saveNewBookingErrorValidation() throws Exception {
         bookingInDto = new BookingInDto();
         bookingInDto.setItemId(1L);
         bookingInDto.setStart(LocalDateTime.parse("2023-03-05T00:09:00"));
@@ -176,10 +192,12 @@ class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400));
+        verify(bookingService, times(1))
+                .saveNewBooking(1L, bookingInDto);
     }
 
     @Test
-    void approvedBooking() throws Exception {
+    public void approvedBooking() throws Exception {
         bookingOutDto.setStatus(BookingStatus.APPROVED);
         when(bookingService.updateBooking(1L, 1L, "true")).thenReturn(bookingOutDto);
 
@@ -192,10 +210,12 @@ class BookingControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.start").value("2023-03-01T00:09:00"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.end").value("2023-03-03T00:09:00"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("APPROVED"));
+        verify(bookingService, times(1))
+                .updateBooking(1L, 1L, "true");
     }
 
     @Test
-    void approvedBookingErrorValidation() throws Exception {
+    public void approvedBookingErrorValidation() throws Exception {
         when(bookingService.updateBooking(1L, 1L, "false"))
                 .thenThrow(new NotFoundException("Not Found"));
 
@@ -204,10 +224,12 @@ class BookingControllerTest {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(404));
+        verify(bookingService, times(1))
+                .updateBooking(1L, 1L, "false");
     }
 
     @Test
-    void approvedBookingUnknownUser() throws Exception {
+    public void approvedBookingUnknownUser() throws Exception {
         bookingOutDto.setStatus(BookingStatus.APPROVED);
         when(bookingService.updateBooking(100L, 1L, "true"))
                 .thenThrow(new ValidationException("Error Validation"));
@@ -217,5 +239,7 @@ class BookingControllerTest {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400));
+        verify(bookingService, times(1))
+                .updateBooking(100L, 1L, "true");
     }
 }

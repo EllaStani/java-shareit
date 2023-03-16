@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = UserController.class)
 @AutoConfigureMockMvc
-class UserControllerTest {
+public class UserControllerTest {
     @MockBean
     private UserService userService;
     @Autowired
@@ -35,12 +35,12 @@ class UserControllerTest {
     private UserDto userDto;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         userDto = new UserDto(1L, "testUser", "test@email.ru");
     }
 
     @Test
-    void getAllUsers() throws Exception {
+    public void getAllUsers() throws Exception {
         when(userService.getAllUsers())
                 .thenReturn(List.of(userDto));
 
@@ -50,10 +50,11 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(userDto.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value(userDto.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].email").value(userDto.getEmail()));
+        verify(userService, times(1)).getAllUsers();
     }
 
     @Test
-    void getUserById() throws Exception {
+    public void getUserById() throws Exception {
         when(userService.getUserById(anyLong()))
                 .thenReturn(userDto);
 
@@ -62,18 +63,20 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(userDto.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(userDto.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(userDto.getEmail()));
+        verify(userService, times(1)).getUserById(anyLong());
     }
 
     @Test
-    void getUnknownUserById() throws Exception {
+    public void getUnknownUserById() throws Exception {
         when(userService.getUserById(100L)).thenThrow(new NotFoundException("Not Found"));
 
         mockMvc.perform(get("/users/{userId}", 100L))
                 .andExpect(status().is(404));
+        verify(userService, times(1)).getUserById(100L);
     }
 
     @Test
-    void saveNewUser() throws Exception {
+    public void saveNewUser() throws Exception {
         UserDto saveUserDto = new UserDto(null, "testUser", "test@email.ru");
         when(userService.saveNewUser(any())).thenReturn(userDto);
 
@@ -86,11 +89,12 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(userDto.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(userDto.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(userDto.getEmail()));
+        verify(userService, times(1)).saveNewUser(any());
     }
 
     @Test
     @DisplayName("Если нет name, то возвращается код 400")
-    void saveNewUserNoName() throws Exception {
+    public void saveNewUserNoName() throws Exception {
         UserDto failUserDto = new UserDto(null, null, "test@email.ru");
 
         mockMvc.perform(post("/users")
@@ -103,7 +107,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("Если нет email, то возвращается код 400")
-    void saveNewUserNoEmail() throws Exception {
+    public void saveNewUserNoEmail() throws Exception {
         UserDto failUserDto = new UserDto(null, "failUser", null);
 
         mockMvc.perform(post("/users")
@@ -116,7 +120,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("Если email некорректный, то возвращается код 400")
-    void saveNewUserFailEmail() throws Exception {
+    public void saveNewUserFailEmail() throws Exception {
         UserDto failUserDto = new UserDto(null, "failUser", "user.com");
 
         mockMvc.perform(post("/users")
@@ -128,7 +132,7 @@ class UserControllerTest {
     }
 
     @Test
-    void updateUser() throws Exception {
+    public void updateUser() throws Exception {
         UserDto updateUserDto = new UserDto(1L, "updateUser", "test@email.ru");
 
         when(userService.updateUser(anyLong(), any()))
@@ -143,10 +147,11 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(updateUserDto.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(updateUserDto.getName()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(updateUserDto.getEmail()));
+        verify(userService, times(1)).updateUser(anyLong(), any());
     }
 
     @Test
-    void updateUnknownUser() throws Exception {
+    public void updateUnknownUser() throws Exception {
         when(userService.updateUser(anyLong(), any())).thenThrow(new NotFoundException("Not Found"));
 
         mockMvc.perform(patch("/users/{userId}", 100L)
@@ -155,13 +160,15 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(404));
+        verify(userService, times(1)).updateUser(anyLong(), any());
     }
 
     @Test
-    void deleteUser() throws Exception {
+    public void deleteUser() throws Exception {
         doNothing().when(userService).deleteUserById(1L);
         mockMvc.perform(delete("/users/{userId}", 1L))
                 .andExpect(status().isOk());
+        verify(userService, times(1)).deleteUserById(1L);
         verify(userService, times(1)).deleteUserById(1L);
     }
 }

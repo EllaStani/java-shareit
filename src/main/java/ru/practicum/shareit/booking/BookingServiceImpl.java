@@ -185,27 +185,18 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private User checkingExistUser(long userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            throw new NotFoundException(String.format("Пользователь с id=%s не найден", userId));
-        }
-        return user;
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id=%s не найден", userId)));
     }
 
     private Item checkingExistItem(long itemId) {
-        Item item = itemRepository.findById(itemId).orElse(null);
-        if (item == null) {
-            throw new NotFoundException(String.format("Вещь с id=%s не найдена", itemId));
-        }
-        return item;
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException(String.format("Вещь с id=%s не найдена", itemId)));
     }
 
     private Booking checkingExistBooking(long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId).orElse(null);
-        if (booking == null) {
-            throw new NotFoundException(String.format("Бронирование с id=%s не найдено", bookingId));
-        }
-        return booking;
+        return bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException(String.format("Бронирование с id=%s не найдено", bookingId)));
     }
 
     private void validationBooking(Booking booking) {

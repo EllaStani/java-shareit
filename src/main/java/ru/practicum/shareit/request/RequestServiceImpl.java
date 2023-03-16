@@ -19,6 +19,7 @@ import ru.practicum.shareit.validation.FromSizeRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -66,33 +67,31 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private User checkingExistUser(long userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            throw new NotFoundException(String.format("Пользователь с id=%s не найден", userId));
-        }
-        return user;
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id=%s не найден", userId)));
     }
 
     private ItemRequest checkingExistRequest(long requestId) {
-        ItemRequest itemRequest = requestRepository.findById(requestId).orElse(null);
-        if (itemRequest == null) {
-            throw new NotFoundException(String.format("Запрос с id=%s не найден", requestId));
-        }
-        return itemRequest;
-    }
-
-    private RequestOutDto getRequestByIdWithResponses(long requestId) {
-        ItemRequest itemRequest = requestRepository.findById(requestId).get();
-        List<Item> items = itemRepository.findItemByRequestId(requestId);
-        RequestOutDto requestDto = RequestMapper.mapToRequestOutDto(itemRequest,
-                ItemMapper.mapToListItemForRequestDto(items));
-        return requestDto;
+        return requestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException(String.format("Запрос с id=%s не найден", requestId)));
     }
 
     private List<RequestOutDto> mapToListRequestWithResponseDto(List<ItemRequest> requests) {
         List<RequestOutDto> requestDtos = new ArrayList<>();
+
+        List<Long> requestIds = new ArrayList<>();
+        requests.stream()
+                .map(r -> requestIds.add(r.getId()))
+                .collect(Collectors.toList());
+
+        List<Item> items = itemRepository.findItemByListRequestIds(requestIds);
+
         for (ItemRequest request : requests) {
-            requestDtos.add(getRequestByIdWithResponses(request.getId()));
+            List requestItems = items.stream()
+                    .filter(i -> i.getRequest().getId() == request.getId())
+                    .collect(Collectors.toList());
+            requestDtos.add(RequestMapper.mapToRequestOutDto(
+                    request, ItemMapper.mapToListItemForRequestDto(requestItems)));
         }
         return requestDtos;
     }

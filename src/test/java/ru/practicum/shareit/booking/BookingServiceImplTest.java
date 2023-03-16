@@ -25,8 +25,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static ru.practicum.shareit.booking.BookingStatus.*;
 
-class BookingServiceImplTest {
-    private BookingServiceImpl bookingService;
+public class BookingServiceImplTest {
+    private BookingService bookingService;
     private BookingJpaRepository bookingRepository;
     private UserJpaRepository userRepository;
     private ItemJpaRepository itemRepository;
@@ -40,10 +40,10 @@ class BookingServiceImplTest {
     private Booking booking3;
     private Booking booking4;
     private Pageable pageable;
-    Sort startSort;
+    private Sort startSort;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         bookingRepository = mock(BookingJpaRepository.class);
         itemRepository = mock(ItemJpaRepository.class);
         userRepository = mock(UserJpaRepository.class);
@@ -70,7 +70,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByBookerForStateALL() {
+    public void getAllBookingByBookerForStateALL() {
         when(userRepository.findById(user2.getId())).thenReturn(Optional.of(user2));
         when(bookingRepository.findBookingByBooker_Id(user2.getId(), pageable))
                 .thenReturn(List.of(booking4, booking1));
@@ -84,7 +84,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByBookerForStateWAITING() {
+    public void getAllBookingByBookerForStateWAITING() {
         when(userRepository.findById(user2.getId())).thenReturn(Optional.of(user2));
         when(bookingRepository.findBookingByBooker_IdAndStatus(user2.getId(), WAITING))
                 .thenReturn(List.of(booking4));
@@ -97,7 +97,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByBookerForStateREJECTED() {
+    public void getAllBookingByBookerForStateREJECTED() {
         when(userRepository.findById(user3.getId())).thenReturn(Optional.of(user3));
         when(bookingRepository.findBookingByBooker_IdAndStatus(user3.getId(), REJECTED))
                 .thenReturn(List.of(booking3));
@@ -110,7 +110,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByBookerForStateFUTURE() {
+    public void getAllBookingByBookerForStateFUTURE() {
         when(userRepository.findById(user2.getId())).thenReturn(Optional.of(user2));
         when(bookingRepository.findByBooker_IdAndStartIsAfter(anyLong(), any(LocalDateTime.class), any()))
                 .thenReturn(List.of(booking4));
@@ -123,7 +123,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByBookerForStateCURRENT() {
+    public void getAllBookingByBookerForStateCURRENT() {
         when(userRepository.findById(user3.getId())).thenReturn(Optional.of(user3));
         when(bookingRepository.findByBooker_IdAndStartIsBeforeAndEndIsAfter(
                 anyLong(), any(LocalDateTime.class), any(LocalDateTime.class), any()))
@@ -138,7 +138,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByBookerForStatePAST() {
+    public void getAllBookingByBookerForStatePAST() {
         when(userRepository.findById(user2.getId())).thenReturn(Optional.of(user2));
         when(bookingRepository.findByBooker_IdAndEndIsBefore(
                 anyLong(), any(LocalDateTime.class), any()))
@@ -152,7 +152,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByBookerForStateUNSUPPORTED() {
+    public void getAllBookingByBookerForStateUNSUPPORTED() {
         Assertions.assertThrows(ValidationException.class,
                 () -> {
                     bookingService.getAllBookingByBooker("UNSUPPORTED_STATUS", user1.getId(), 0, 10);
@@ -160,7 +160,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByBookerUnknownUser() {
+    public void getAllBookingByBookerUnknownUser() {
         User nullUser = new User();
         nullUser = null;
 
@@ -173,7 +173,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByOwnerForStateALL() {
+    public void getAllBookingByOwnerForStateALL() {
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
         when(bookingRepository.findBookingByItemOwnerId(user1.getId(), pageable))
                 .thenReturn(List.of(booking2, booking1));
@@ -187,7 +187,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByOwnerForStateWAITING() {
+    public void getAllBookingByOwnerForStateWAITING() {
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
         when(bookingRepository.findBookingByItemOwnerIdAndStatus(user1.getId(), WAITING))
                 .thenReturn(List.of(booking4));
@@ -200,7 +200,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByOwnerForStateREJECTED() {
+    public void getAllBookingByOwnerForStateREJECTED() {
         when(userRepository.findById(user2.getId())).thenReturn(Optional.of(user2));
         when(bookingRepository.findBookingByItemOwnerIdAndStatus(user2.getId(), REJECTED))
                 .thenReturn(List.of(booking3));
@@ -213,7 +213,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByOwnerForStateFUTURE() {
+    public void getAllBookingByOwnerForStateFUTURE() {
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
         when(bookingRepository.findBookingByItemOwnerIdAndStartIsAfter(anyLong(), any(LocalDateTime.class), any()))
                 .thenReturn(List.of(booking4));
@@ -226,7 +226,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByOwnerForStateCURRENT() {
+    public void getAllBookingByOwnerForStateCURRENT() {
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
         when(bookingRepository.findBookingByItemOwnerIdAndStartIsBeforeAndEndIsAfter(
                 anyLong(), any(LocalDateTime.class), any(LocalDateTime.class), any()))
@@ -240,7 +240,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByOwnerForStatePAST() {
+    public void getAllBookingByOwnerForStatePAST() {
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
         when(bookingRepository.findBookingByItemOwnerIdAndEndIsBefore(
                 anyLong(), any(LocalDateTime.class), any()))
@@ -254,7 +254,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByOwnerForStateUNSUPPORTED() {
+    public void getAllBookingByOwnerForStateUNSUPPORTED() {
         Assertions.assertThrows(ValidationException.class,
                 () -> {
                     bookingService.getAllBookingByOwner("UNSUPPORTED_STATUS", user1.getId(), 0, 10);
@@ -262,7 +262,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingByOwnerUnknownUser() {
+    public void getAllBookingByOwnerUnknownUser() {
         User nullUser = new User();
         nullUser = null;
 
@@ -275,7 +275,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingByIdForOwner() {
+    public void getBookingByIdForOwner() {
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
         when(bookingRepository.findById(booking1.getId())).thenReturn(Optional.of(booking1));
 
@@ -291,7 +291,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingByIdForBooker() {
+    public void getBookingByIdForBooker() {
         when(userRepository.findById(user2.getId())).thenReturn(Optional.of(user2));
         when(bookingRepository.findById(booking1.getId())).thenReturn(Optional.of(booking1));
 
@@ -307,7 +307,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingByIdUnknownUser() {
+    public void getBookingByIdUnknownUser() {
         User nullUser = new User();
         nullUser = null;
 
@@ -320,7 +320,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getUnknownBookingById() {
+    public void getUnknownBookingById() {
         Booking nullBooking = new Booking();
         nullBooking = null;
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
@@ -333,7 +333,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingByIdErrorUser() {
+    public void getBookingByIdErrorUser() {
         when(userRepository.findById(user3.getId())).thenReturn(Optional.of(user3));
         when(bookingRepository.findById(booking1.getId())).thenReturn(Optional.of(booking1));
 
@@ -344,7 +344,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void saveNewBooking() {
+    public void saveNewBooking() {
         BookingInDto bookingInDto = new BookingInDto(1L, LocalDateTime.now().plusDays(3),
                 LocalDateTime.now().plusDays(5));
 
@@ -363,7 +363,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void saveNewBookingUnknownUserId() {
+    public void saveNewBookingUnknownUserId() {
         BookingInDto bookingInDto = new BookingInDto(1L, LocalDateTime.now().plusDays(3),
                 LocalDateTime.now().plusDays(5));
         User nullUser = new User();
@@ -378,7 +378,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void saveNewBookingUnknownItem() {
+    public void saveNewBookingUnknownItem() {
         BookingInDto bookingInDto = new BookingInDto(99L, LocalDateTime.now().plusDays(3),
                 LocalDateTime.now().plusDays(5));
         Item nullItem = new Item();
@@ -394,7 +394,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void saveNewBookingFromOwner() {
+    public void saveNewBookingFromOwner() {
         BookingInDto bookingInDto = new BookingInDto(1L, LocalDateTime.now().plusDays(3),
                 LocalDateTime.now().plusDays(5));
 
@@ -408,7 +408,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void saveNewBookingAvailableItemIsFalse() {
+    public void saveNewBookingAvailableItemIsFalse() {
         BookingInDto bookingInDto = new BookingInDto(2L, LocalDateTime.now().plusDays(3),
                 LocalDateTime.now().plusDays(5));
 
@@ -422,7 +422,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void saveNewBookingStartAfterEnd() {
+    public void saveNewBookingStartAfterEnd() {
         BookingInDto bookingInDto = new BookingInDto(1L, LocalDateTime.now().plusDays(7),
                 LocalDateTime.now().plusDays(5));
 
@@ -436,7 +436,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void saveNewBookingStartBeforeNow() {
+    public void saveNewBookingStartBeforeNow() {
         BookingInDto bookingInDto = new BookingInDto(1L, LocalDateTime.now().minusDays(1),
                 LocalDateTime.now().plusDays(5));
 
@@ -450,7 +450,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void saveNewBookingEndBeforeNow() {
+    public void saveNewBookingEndBeforeNow() {
         BookingInDto bookingInDto = new BookingInDto(1L, LocalDateTime.now().plusDays(3),
                 LocalDateTime.now().minusDays(1));
 
@@ -464,7 +464,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void updateBooking() {
+    public void updateBooking() {
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking1));
 
@@ -475,7 +475,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void updateBookingUnknownOwner() {
+    public void updateBookingUnknownOwner() {
         User nullUser = new User();
         nullUser = null;
 
@@ -488,7 +488,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void updateUnknownBooking() {
+    public void updateUnknownBooking() {
         Booking nullBooking = new Booking();
         nullBooking = null;
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
@@ -501,7 +501,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void updateBookingErrorOwner() {
+    public void updateBookingErrorOwner() {
         when(userRepository.findById(user2.getId())).thenReturn(Optional.of(user2));
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking1));
 
@@ -512,7 +512,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void updateBookingRepeatApproved() {
+    public void updateBookingRepeatApproved() {
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking1));
 

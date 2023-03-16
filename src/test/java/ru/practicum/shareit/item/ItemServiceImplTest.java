@@ -33,13 +33,13 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 import static ru.practicum.shareit.booking.BookingStatus.CANCELED;
 
-class ItemServiceImplTest {
+public class ItemServiceImplTest {
     private ItemJpaRepository itemRepository;
     private UserJpaRepository userRepository;
     private RequestJpaRepository requestRepository;
     private CommentJpaRepository commentRepository;
     private BookingJpaRepository bookingRepository;
-    private ItemServiceImpl itemService;
+    private ItemService itemService;
     private User user1;
     private User user2;
     private User user3;
@@ -76,7 +76,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getItemsByUserId() {
+    public void getItemsByUserId() {
         BookingLastDto lastBooking = new BookingLastDto();
         lastBooking.setId(1L);
         lastBooking.setBookerId(2L);
@@ -112,7 +112,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getItemsByUnknownUserId() {
+    public void getItemsByUnknownUserId() {
         User nullUser = new User();
         nullUser = null;
 
@@ -125,7 +125,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getItemsByUserIdWithEmptyItems() {
+    public void getItemsByUserIdWithEmptyItems() {
         Sort idSort = Sort.by("id");
         Pageable pageable = FromSizeRequest.of(0, 10, idSort);
 
@@ -145,7 +145,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getItemById() {
+    public void getItemById() {
         BookingLastDto lastBooking = new BookingLastDto();
         lastBooking.setId(1L);
         lastBooking.setBookerId(2L);
@@ -176,7 +176,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getUnknownItemById() {
+    public void getUnknownItemById() {
         Item nullItem = new Item();
         nullItem = null;
 
@@ -188,7 +188,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void searchItems() {
+    public void searchItems() {
         ItemDto itemDto2 = makeItemDto("item2", "itemDescription2", true);
         List<ItemDto> itemDtos = List.of(itemDto1, itemDto2);
         Pageable pageable = FromSizeRequest.of(0, 10, Sort.unsorted());
@@ -205,7 +205,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void searchItemsWithEmptyResult() {
+    public void searchItemsWithEmptyResult() {
         Pageable pageable = FromSizeRequest.of(0, 10, Sort.unsorted());
         when(itemRepository.search("abc", pageable)).thenReturn(Collections.emptyList());
 

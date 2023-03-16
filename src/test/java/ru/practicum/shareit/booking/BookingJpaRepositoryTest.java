@@ -18,11 +18,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static ru.practicum.shareit.booking.BookingStatus.*;
 
 @DataJpaTest
-class BookingJpaRepositoryTest {
+public class BookingJpaRepositoryTest {
     @Autowired
-    BookingJpaRepository bookingRepository;
+    private BookingJpaRepository bookingRepository;
     @Autowired
-    ItemJpaRepository itemRepository;
+    private ItemJpaRepository itemRepository;
     @Autowired
     private UserJpaRepository userRepository;
     private User user1;
@@ -35,7 +35,7 @@ class BookingJpaRepositoryTest {
     private Booking booking3;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         user1 = userRepository.save(new User(1L, "user1", "user1@mail.ru"));
         item1 = itemRepository.save(
                 new Item(1L, "item1", "itemDescription1", true, user1, null));
@@ -52,7 +52,7 @@ class BookingJpaRepositoryTest {
     }
 
     @Test
-    void findBookingByBooker_Id() {
+    public void findBookingByBooker_Id() {
         Sort startSort = Sort.by("start").descending();
         Pageable pageable = FromSizeRequest.of(0, 10, startSort);
 
@@ -65,7 +65,7 @@ class BookingJpaRepositoryTest {
     }
 
     @Test
-    void findByBooker_IdAndStartIsAfter() {
+    public void findByBooker_IdAndStartIsAfter() {
         Sort startSort = Sort.by("start");
 
         var result = bookingRepository.findByBooker_IdAndStartIsAfter(
@@ -78,7 +78,7 @@ class BookingJpaRepositoryTest {
     }
 
     @Test
-    void findByBooker_IdAndEndIsBefore() {
+    public void findByBooker_IdAndEndIsBefore() {
         Sort startSort = Sort.by("start");
 
         var result = bookingRepository.findByBooker_IdAndEndIsBefore(
@@ -91,7 +91,7 @@ class BookingJpaRepositoryTest {
     }
 
     @Test
-    void findByBooker_IdAndStartIsBeforeAndEndIsAfter() {
+    public void findByBooker_IdAndStartIsBeforeAndEndIsAfter() {
         Sort startSort = Sort.by("start");
 
         var result = bookingRepository.findByBooker_IdAndStartIsBeforeAndEndIsAfter(
@@ -104,7 +104,7 @@ class BookingJpaRepositoryTest {
     }
 
     @Test
-    void findBookingByBooker_IdAndStatus() {
+    public void findBookingByBooker_IdAndStatus() {
         var result = bookingRepository.findBookingByBooker_IdAndStatus(
                 user3.getId(), REJECTED);
 
@@ -114,7 +114,7 @@ class BookingJpaRepositoryTest {
     }
 
     @Test
-    void findBookingByItemOwnerId() {
+    public void findBookingByItemOwnerId() {
         Sort startSort = Sort.by("start").descending();
         Pageable pageable = FromSizeRequest.of(0, 10, startSort);
 
@@ -127,7 +127,7 @@ class BookingJpaRepositoryTest {
     }
 
     @Test
-    void findBookingByItemOwnerIdAndStatus() {
+    public void findBookingByItemOwnerIdAndStatus() {
         var result = bookingRepository.findBookingByItemOwnerIdAndStatus(
                 user1.getId(), CANCELED);
 
@@ -137,7 +137,7 @@ class BookingJpaRepositoryTest {
     }
 
     @Test
-    void findBookingByItemOwnerIdAndStartIsAfter() {
+    public void findBookingByItemOwnerIdAndStartIsAfter() {
         Sort startSort = Sort.by("start").descending();
 
         var result = bookingRepository.findBookingByItemOwnerIdAndStartIsAfter(
@@ -150,7 +150,7 @@ class BookingJpaRepositoryTest {
     }
 
     @Test
-    void findBookingByItemOwnerIdAndEndIsBefore() {
+    public void findBookingByItemOwnerIdAndEndIsBefore() {
         Sort startSort = Sort.by("start").descending();
 
         var result = bookingRepository.findBookingByItemOwnerIdAndEndIsBefore(
@@ -162,7 +162,7 @@ class BookingJpaRepositoryTest {
     }
 
     @Test
-    void findBookingByItemOwnerIdAndStartIsBeforeAndEndIsAfter() {
+    public void findBookingByItemOwnerIdAndStartIsBeforeAndEndIsAfter() {
         Sort startSort = Sort.by("start");
 
         var result = bookingRepository.findBookingByItemOwnerIdAndStartIsBeforeAndEndIsAfter(
@@ -175,7 +175,7 @@ class BookingJpaRepositoryTest {
     }
 
     @Test
-    void findBookingByItemIdAndEndIsBefore() {
+    public void findBookingByItemIdAndEndIsBefore() {
         Sort startSort = Sort.by("start");
 
         var result = bookingRepository.findBookingByItemIdAndEndIsBefore(
@@ -187,7 +187,7 @@ class BookingJpaRepositoryTest {
     }
 
     @Test
-    void findBookingByItemIdAndStartIsAfter() {
+    public void findBookingByItemIdAndStartIsAfter() {
         Sort startSort = Sort.by("start");
 
         var result = bookingRepository.findBookingByItemIdAndStartIsAfterAndStatusIsNot(
@@ -199,7 +199,7 @@ class BookingJpaRepositoryTest {
     }
 
     @Test
-    void findByBooker_IdAndItem_IdAndEndIsBefore() {
+    public void findByBooker_IdAndItem_IdAndEndIsBefore() {
 
         var result = bookingRepository.findByBooker_IdAndItem_IdAndEndIsBefore(user3.getId(),
                 item1.getId(), LocalDateTime.parse("2023-03-31T00:09:00"));
