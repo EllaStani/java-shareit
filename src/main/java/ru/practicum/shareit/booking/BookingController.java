@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingInDto;
 import ru.practicum.shareit.booking.dto.BookingOutDto;
+import ru.practicum.shareit.validation.Create;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -51,7 +52,7 @@ public class BookingController {
 
     @PostMapping
     public BookingOutDto saveNewBooking(@RequestHeader("X-Sharer-User-Id") Long bookerId,
-                                        @RequestBody BookingInDto bookingInDto) {
+                                        @Validated({Create.class}) @RequestBody BookingInDto bookingInDto) {
         BookingOutDto newBooking = bookingService.saveNewBooking(bookerId, bookingInDto);
         log.info("Post-запрос:  пользователь {} забронировал вещь: {}", bookerId, bookingInDto);
         return newBooking;

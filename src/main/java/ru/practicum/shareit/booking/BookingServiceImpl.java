@@ -204,6 +204,10 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException(
                     "Дата начала бронирования не может быть больше даты окончания бронирования");
         }
+        if (booking.getStart().isEqual(booking.getEnd())) {
+            throw new ValidationException(
+                    "Дата начала бронирования не может быть равна дате окончания бронирования");
+        }
         if (booking.getStart().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Начало бронирования не может быть меньше текущей даты");
         }
