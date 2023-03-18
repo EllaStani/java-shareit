@@ -163,10 +163,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private BookingLastDto getLastBookingByItemId(long itemId) {
-        Sort endSort = Sort.by("end").descending();
+        Sort startSort = Sort.by("start").descending();
         LocalDateTime nowDate = LocalDateTime.now();
-        List<Booking> lastBookings = bookingRepository.findBookingByItemIdAndEndIsBefore(
-                itemId, nowDate, endSort);
+        List<Booking> lastBookings = bookingRepository.findBookingByItemIdAndStartIsBefore(
+                itemId, nowDate, startSort);
         return lastBookings.size() == 0 ? null : BookingMapper.mapToBookingLastDto(lastBookings.get(0));
     }
 

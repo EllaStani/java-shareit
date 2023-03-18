@@ -97,7 +97,7 @@ public class ItemServiceImplTest {
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
         when(itemRepository.findItemByOwnerId(user1.getId(), pageable)).thenReturn(List.of(item1));
         when(commentRepository.findCommentByItem_Id((item1.getId()))).thenReturn(Collections.emptyList());
-        when(bookingRepository.findBookingByItemIdAndEndIsBefore(
+        when(bookingRepository.findBookingByItemIdAndStartIsBefore(
                 anyLong(), any(LocalDateTime.class), any()))
                 .thenReturn(List.of(booking1));
         when(bookingRepository.findBookingByItemIdAndStartIsAfterAndStatusIsNot(
