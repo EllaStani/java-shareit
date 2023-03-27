@@ -73,8 +73,8 @@ public class BaseClient {
         return makeAndSendRequest(HttpMethod.PATCH, path, userId, parameters, body);
     }
 
-    protected <T> ResponseEntity<Object> patch(URI uri, long userId, Map<String, Object> parameters) {
-        return patch(String.valueOf(uri), userId, null, null);
+    protected <T> ResponseEntity<Object> patch(URI uri, long userId) {
+        return patch(String.valueOf(uri), userId, null);
     }
 
     protected ResponseEntity<Object> delete(String path) {

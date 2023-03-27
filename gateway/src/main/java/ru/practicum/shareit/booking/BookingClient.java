@@ -55,11 +55,8 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> patchBooking(long bookerId, long bookingId, String approved) {
-        Map<String, Object> parameters = Map.of(
-                "approved", approved
-        );
         String s = "/" + bookingId;
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(s).queryParam("approved", approved);
-        return patch(builder.build().toUri(), bookerId, parameters);
+        return patch(builder.build().toUri(), bookerId);
     }
 }
